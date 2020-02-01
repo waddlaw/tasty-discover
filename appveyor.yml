@@ -1,24 +1,48 @@
-# Disabled cache in hope of improving reliability of AppVeyor builds
-#cache:
-#- "c:\\sr" # stack root, short paths == fewer problems
+clone_folder: "c:\\WORK"
+clone_depth: 5
 
-build: off
+# Do not build feature branch with open Pull Requests
+skip_branch_with_pr: true
 
-before_test:
-# http://help.appveyor.com/discussions/problems/6312-curl-command-not-found
-- set PATH=C:\Program Files\Git\mingw64\bin;%PATH%
+platform:
+  - x64
 
-- curl -sS -ostack.zip -L --insecure http://www.stackage.org/stack/windows-i386
-- 7z x stack.zip stack.exe
-
-clone_folder: "c:\\stack"
 environment:
   global:
-    STACK_ROOT: "c:\\sr"
+    CABOPTS:  --store-dir=C:\\SR --http-transport=plain-http
+    CHOCOCMD: ghc --version %GHCVER%
+  matrix:
+    - GHCVER: 8.6.5
 
-test_script:
-- stack setup > nul
-# The ugly echo "" hack is to avoid complaints about 0 being an invalid file
-# descriptor
-- echo "" | stack --no-terminal install --jobs 1
-- echo "" | stack --no-terminal test --jobs 1
+cache:
+  - dist-newstyle
+  - "c:\\sr -> appveyor.yml"
+
+for:
+  -
+    matrix:
+      only:
+        - platform: x86
+    environment:
+      global:
+        GHCOPTS: --forcex86
+
+branches:
+  except:
+    - site
+
+install:
+  - choco source add -n mistuke -s https://www.myget.org/F/mistuke/api/v2
+  - choco install %CHOCOCMD% -y %GHCOPTS% %CHOCOPTS% --ignore-dependencies
+  - choco install -y cabal %CHOCOPTS%
+  - refreshenv
+
+before_build:
+  - cabal --version
+  - ghc --version
+  - cabal %CABOPTS% v2-update
+
+build_script:
+  - cabal %CABOPTS% v2-build
+  - cabal %CABOPTS% v2-install
+  - cabal %CABOPTS% v2-test
