@@ -1,25 +1,28 @@
-[![Build Status](https://travis-ci.org/lwm/tasty-discover.svg?branch=master)](https://travis-ci.org/lwm/tasty-discover)
-[![tasty-discover-nightly](http://stackage.org/package/tasty-discover/badge/nightly)](http://stackage.org/nightly/package/tasty-discover)
+![](https://github.com/waddlaw/tasty-discover/workflows/linux/badge.svg)
+![](https://github.com/waddlaw/tasty-discover/workflows/hlint/badge.svg)
+[![Build status](https://ci.appveyor.com/api/projects/status/faneyew142nmprh0?svg=true)](https://ci.appveyor.com/project/waddlaw/tasty-discover)
+
+<!-- [![tasty-discover-nightly](http://stackage.org/package/tasty-discover/badge/nightly)](http://stackage.org/nightly/package/tasty-discover)
 [![tasty-discover-lts](http://stackage.org/package/tasty-discover/badge/lts)](http://stackage.org/lts/package/tasty-discover)
 [![Hackage Status](https://img.shields.io/hackage/v/tasty-discover.svg)](http://hackage.haskell.org/package/tasty-discover)
-[![GitHub license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://raw.githubusercontent.com/lwm/tasty-discover/master/LICENSE)
+[![GitHub license](https://img.shields.io/badge/license-MIT-brightgreen.svg)](https://raw.githubusercontent.com/lwm/tasty-discover/master/LICENSE) -->
 
 # tasty-discover
 
+- [tasty-discover](#tasty-discover)
 - [Getting Started](#getting-started)
-  * [Create Test Driver File](#create-test-driver-file)
-  * [Configure Cabal or Hpack Test Suite](#configure-cabal-or-hpack-test-suite)
+  - [Create Test Driver File](#create-test-driver-file)
+  - [Configure Cabal or Hpack Test Suite](#configure-cabal-or-hpack-test-suite)
 - [Write Tests](#write-tests)
 - [Customise Discovery](#customise-discovery)
-  * [No Arguments](#no-arguments)
-  * [With Arguments](#with-arguments)
+  - [No Arguments](#no-arguments)
+  - [With Arguments](#with-arguments)
 - [Example Project](#example-project)
 - [Change Log](#change-log)
 - [Deprecation Policy](#deprecation-policy)
 - [Contributing](#contributing)
-- [FAQ](#frequently-asked-questions)
-- [Maintenance](#maintenance)
-- [Acknowledgements](#acknowledgements)
+- [Frequently Asked Questions](#frequently-asked-questions)
+  - [Deleting Tests Breaks The Test Run](#deleting-tests-breaks-the-test-run)
 
 Haskell auto-magic test discovery and runner for the [tasty test framework].
 
@@ -37,10 +40,10 @@ See below for full documentation and examples.
 
 There are 4 simple steps:
 
-  1. [Create a test driver file in the test directory](#create-test-driver-file)
-  2. [Mark the driver file as the `main-is` in the test suite](#configure-cabal-or-hpack-test-suite)
-  3. [Mark tests with the correct prefixes](#write-tests)
-  4. [Customise test discovery as needed](#customise-discovery)
+1. [Create a test driver file in the test directory](#create-test-driver-file)
+2. [Mark the driver file as the `main-is` in the test suite](#configure-cabal-or-hpack-test-suite)
+3. [Mark tests with the correct prefixes](#write-tests)
+4. [Customise test discovery as needed](#customise-discovery)
 
 Check out the [example project](#example-project) to get moving quickly.
 
@@ -52,7 +55,7 @@ configuration. It should be at the top level of the test directory.
 
 For example (in `test/Driver.hs`):
 
-```
+```haskell
 {-# OPTIONS_GHC -F -pgmF tasty-discover #-}
 ```
 
@@ -62,7 +65,7 @@ In order for Cabal/Stack to know where the tests are, you'll need to configure
 the `main-is` option of your test-suite to point to the driver file. In the
 following example, the test driver file is called `Driver.hs`:
 
-```
+```cabal
 test-suite test
   main-is: Driver.hs
   hs-source-dirs: test
@@ -73,7 +76,7 @@ If you use [hpack], that might look like:
 
 [hpack]: https://git.coop/sol/hpack
 
-``` yaml
+```yaml
 tests:
   test:
     main: "Driver.hs"
@@ -87,16 +90,16 @@ tests:
 Create test modules and prefix the test function name with an identifier that
 corresponds to the testing library you wish to run the test with:
 
-  - **prop_**: [QuickCheck](http://hackage.haskell.org/package/tasty-quickcheck) properties.
-  - **scprop_**: [SmallCheck](http://hackage.haskell.org/package/tasty-smallcheck) properties.
-  - **hprop_**: [Hedgehog](http://hackage.haskell.org/package/tasty-hedgehog) properties.
-  - **unit_**: [HUnit](http://hackage.haskell.org/package/tasty-hunit) test cases.
-  - **spec_**: [Hspec](http://hackage.haskell.org/package/tasty-hspec) specifications.
-  - **test_**: [Tasty](http://hackage.haskell.org/package/tasty) TestTrees.
+- **prop_**: [QuickCheck](http://hackage.haskell.org/package/tasty-quickcheck) properties.
+- **scprop_**: [SmallCheck](http://hackage.haskell.org/package/tasty-smallcheck) properties.
+- **hprop_**: [Hedgehog](http://hackage.haskell.org/package/tasty-hedgehog) properties.
+- **unit_**: [HUnit](http://hackage.haskell.org/package/tasty-hunit) test cases.
+- **spec_**: [Hspec](http://hackage.haskell.org/package/tasty-hspec) specifications.
+- **test_**: [Tasty](http://hackage.haskell.org/package/tasty) TestTrees.
 
 Here is an example test module with a bunch of different tests:
 
-``` haskell
+```haskell
 {-# LANGUAGE ScopedTypeVariables #-}
 
 module ExampleTest where
@@ -151,23 +154,23 @@ You configure `tasty-discover` by passing options to the test driver file.
 
 Example: `{-# OPTIONS_GHC -F -pgmF tasty-discover -optF --debug #-}`
 
-  - **--debug**: Output the contents of the generated module while testing.
-  - **--tree-display**: Display the test output results hierarchically.
+- **--debug**: Output the contents of the generated module while testing.
+- **--tree-display**: Display the test output results hierarchically.
 
 ## With Arguments
 
 Example: `{-# OPTIONS_GHC -F -pgmF tasty-discover -optF --modules="*CustomTest.hs" #-}`
 
-  - **--modules**: Which test modules to discover (with glob pattern).
-  - **--ignores**: Which test modules to ignore (with glob pattern).
-  - **--generated-module**: The name of the generated test module.
-  - **--ingredient**: Tasty ingredients to add to your test runner.
+- **--modules**: Which test modules to discover (with glob pattern).
+- **--ignores**: Which test modules to ignore (with glob pattern).
+- **--generated-module**: The name of the generated test module.
+- **--ingredient**: Tasty ingredients to add to your test runner.
 
 It is also possible to override [tasty test options] with `-optF`:
 
 [tasty test options]: https://git.coop/feuerbach/tasty#options
 
-``` bash
+```haskell
 {-# OPTIONS_GHC -F -pgmF tasty-discover -optF --hide-successes #-}
 ```
 
@@ -208,29 +211,3 @@ examples, so this should be simple - and I'll get to review your change ASAP.
 This is a known limitation and has been reported. No fix is planned unless you have time.
 
 Please see [#145](https://git.coop/lwm/tasty-discover/issues/145) for more information.
-
-# Maintenance
-
-If you're interested in helping maintain this package, please let [@lwm] know!
-
-It doesn't take much time (max ~3 hours a month) and all we need to do is:
-
-  * Triage issues that are raised.
-  * Review pull requests from contributors.
-  * Fix bugs when present.
-  * Make releases.
-  * Manage bounds issues on Stackage.
-
-You can [create an issue] or drop him a line at **lukewm AT riseup DOT NET**.
-
-[@lwm]: https://git.coop/lwm
-[create an issue]: https://git.coop/lwm/tasty-discover/issues/new
-
-# Acknowledgements
-
-Thanks to [hspec-discover] and [tasty-auto] for making this possible.
-
-A huge thanks to the growing list of contributors.
-
-[hspec-discover]: https://hspec.github.io/hspec-discover.html
-[tasty-auto]: https://github.com/minad/tasty-auto

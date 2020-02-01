@@ -1,77 +1,77 @@
--- This file has been generated from package.yaml by hpack version 0.28.2.
---
--- see: https://github.com/sol/hpack
---
--- hash: c69bb3382cc20b5891546bfbf1fc899a6933c635332b6a4d5bde683aee75193a
+cabal-version:      2.4
+name:               tasty-discover
+version:            4.2.1
+synopsis:           Test discovery for the tasty framework.
+description:
+  Automatic test discovery and runner for the tasty framework.
+  Prefix your test case names and tasty-discover will discover, collect and run them. All popular test libraries are covered. Configure once and then just write your tests. Avoid forgetting to add test modules to your Cabal/Hpack files. Tasty ingredients are included along with various configuration options for different use cases. Please see the `README.md` below for how to get started.
 
-name:           tasty-discover
-version:        4.2.1
-synopsis:       Test discovery for the tasty framework.
-description:    Automatic test discovery and runner for the tasty framework.
-                Prefix your test case names and tasty-discover will discover, collect and run them. All popular test libraries are covered. Configure once and then just write your tests. Avoid forgetting to add test modules to your Cabal/Hpack files. Tasty ingredients are included along with various configuration options for different use cases. Please see the `README.md` below for how to get started.
-category:       Testing
-stability:      Experimental
-homepage:       http://git.coop/lwm/tasty-discover
-bug-reports:    http://git.coop/lwm/tasty-discover/issues
-author:         Luke Murphy
-maintainer:     Luke Murphy <lukewm@riseup.net>
-copyright:      2016 Luke Murphy
-license:        MIT
-license-file:   LICENSE
-build-type:     Simple
-cabal-version:  >= 1.10
+category:           Testing
+stability:          Experimental
+homepage:           https://github.com/waddlaw/tasty-discover
+bug-reports:        https://github.com/waddlaw/tasty-discover/issues
+author:             Luke Murphy
+maintainer:         waddlaw <ingronze@gmail.com>
+copyright:          2016 Luke Murphy
+license:            MIT
+license-file:       LICENSE
+tested-with:        GHC ==8.4.4 || ==8.6.5 || ==8.8.1
 extra-source-files:
-    CHANGELOG.md
-    README.md
+  CHANGELOG.md
+  README.md
 
 source-repository head
-  type: git
-  location: http://git.coop/lwm/tasty-discover
+  type:     git
+  location: https://github.com/waddlaw/tasty-discover
+
+flag pedantic
+  description: pedantic option
+  manual:      True
+  default:     False
+
+common common
+  build-depends:
+    , base        >=4.11 && <4.14
+    , containers  >=0.4  && <1.0
+    , directory   >=1.1  && <2.0
+    , filepath    >=1.3  && <2.0
+    , Glob        >=0.8  && <1.0
+
+  ghc-options:
+    -Wall -Wcompat -Wincomplete-uni-patterns
+    -Wincomplete-record-updates -Wnoncanonical-monad-instances
+    -Wredundant-constraints -Wtabs
+
+  if flag(pedantic)
+    ghc-options: -Werror
+
+  default-language: Haskell2010
 
 library
-  hs-source-dirs:
-      library
-  ghc-options: -Wall
-  build-depends:
-      Glob >=0.8 && <1.0
-    , base >=4.8 && <5.0
-    , containers >=0.4 && <1.0
-    , directory >=1.1 && <2.0
-    , filepath >=1.3 && <2.0
+  import:          common
+  hs-source-dirs:  src
+
+  -- cabal-fmt: expand src
   exposed-modules:
-      Test.Tasty.Config
-      Test.Tasty.Discover
-      Test.Tasty.Generator
-  other-modules:
-      Paths_tasty_discover
-  default-language: Haskell2010
+    Test.Tasty.Config
+    Test.Tasty.Discover
+    Test.Tasty.Generator
+
+  other-modules:   Paths_tasty_discover
 
 executable tasty-discover
-  main-is: executable/Main.hs
-  ghc-options: -Wall
-  build-depends:
-      Glob >=0.8 && <1.0
-    , base >=4.8 && <5.0
-    , containers >=0.4 && <1.0
-    , directory >=1.1 && <2.0
-    , filepath >=1.3 && <2.0
-    , tasty-discover
-  other-modules:
-      Paths_tasty_discover
-  default-language: Haskell2010
+  import:        common
+  main-is:       app/Main.hs
+  build-depends: tasty-discover
+  other-modules: Paths_tasty_discover
+  ghc-options:   -O2
 
 test-suite test
-  type: exitcode-stdio-1.0
-  main-is: Driver.hs
-  hs-source-dirs:
-      test
-  ghc-options: -Wall
+  import:             common
+  type:               exitcode-stdio-1.0
+  main-is:            Driver.hs
+  hs-source-dirs:     test
   build-depends:
-      Glob >=0.8 && <1.0
-    , base
-    , containers >=0.4 && <1.0
-    , directory >=1.1 && <2.0
-    , filepath >=1.3 && <2.0
     , hedgehog
     , tasty
     , tasty-discover
@@ -80,11 +80,11 @@ test-suite test
     , tasty-hunit
     , tasty-quickcheck
     , tasty-smallcheck
+
+  -- cabal-fmt: expand test -Driver
   other-modules:
-      ConfigTest
-      DiscoverTest
-      SubMod.FooBaz
-      SubMod.PropTest
-      SubMod.SubSubMod.PropTest
-      Paths_tasty_discover
-  default-language: Haskell2010
+    ConfigTest
+    DiscoverTest
+    SubMod.FooBaz
+    SubMod.PropTest
+    SubMod.SubSubMod.PropTest

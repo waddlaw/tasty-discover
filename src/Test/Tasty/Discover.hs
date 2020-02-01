@@ -12,24 +12,21 @@ module Test.Tasty.Discover (
   , showTests
   ) where
 
-import           Data.List                (dropWhileEnd, intercalate,
-                                           isPrefixOf, nub, stripPrefix)
+import           Data.List
 import qualified Data.Map.Strict          as M
-import           Data.Maybe               (fromMaybe)
+import           Data.Maybe
 #if defined(mingw32_HOST_OS)
-import           GHC.IO.Encoding.CodePage (mkLocaleEncoding)
-import           GHC.IO.Encoding.Failure  (CodingFailureMode (TransliterateCodingFailure))
-import           GHC.IO.Handle            (hGetContents, hSetEncoding)
+import           GHC.IO.Encoding.CodePage
+import           GHC.IO.Encoding.Failure
+import           GHC.IO.Handle
 #else
-import           GHC.IO.Handle            (hGetContents)
+import           GHC.IO.Handle
 #endif
-import           System.FilePath          (pathSeparator, takeDirectory)
-import           System.FilePath.Glob     (compile, globDir1, match)
-import           System.IO                (IOMode (ReadMode), openFile)
-import           Test.Tasty.Config        (Config (..), GlobPattern)
-import           Test.Tasty.Generator     (Generator (..), Test (..),
-                                           generators, getGenerators, mkTest,
-                                           showSetup)
+import           System.FilePath
+import           System.FilePath.Glob
+import           System.IO
+import           Test.Tasty.Config
+import           Test.Tasty.Generator
 
 -- | Main function generator, along with all the boilerplate which
 -- which will run the discovered tests.
@@ -66,15 +63,16 @@ generateTestDriver config modname is src tests =
 
 -- | Match files by specified glob pattern.
 filesByModuleGlob :: FilePath -> Maybe GlobPattern -> IO [String]
-filesByModuleGlob directory globPattern = do
-  globDir1 pattern directory
-  where pattern = compile ("**/" ++ fromMaybe "*.hs*" globPattern)
+filesByModuleGlob directory globPattern = globDir1 pat directory
+  where
+    pat = compile ("**/" ++ fromMaybe "*.hs*" globPattern)
 
 -- | Filter and remove files by specified glob pattern.
 ignoreByModuleGlob :: [FilePath] -> Maybe GlobPattern -> [FilePath]
 ignoreByModuleGlob filePaths Nothing = filePaths
-ignoreByModuleGlob filePaths (Just ignoreGlob) = filter (not . match pattern) filePaths
-  where pattern = compile ("**/" ++ ignoreGlob)
+ignoreByModuleGlob filePaths (Just ignoreGlob) = filter (not . match pat) filePaths
+  where
+    pat = compile ("**/" ++ ignoreGlob)
 
 -- | Discover the tests modules.
 findTests :: FilePath -> Config -> IO [Test]
