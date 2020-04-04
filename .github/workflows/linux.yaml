@@ -47,10 +47,9 @@ jobs:
       run: |
         cabal update
         cabal configure --disable-optimization --write-ghc-environment-files=always -j2 --enable-tests
-        cabal test --only-dependencies
+        cabal build --only-dependencies
 
     - name: Build & Test
       run: |
-        cabal build
         cabal install . --overwrite-policy=always
         cabal test all
