@@ -1,4 +1,4 @@
-name: Liux
+name: Linux
 
 on:
   push:
@@ -17,8 +17,9 @@ jobs:
     runs-on: ubuntu-18.04
     strategy:
       matrix:
-        ghc: ["8.8.1", "8.6.5", "8.4.4"]
+        ghc: ["8.8.3", "8.6.5", "8.4.4"]
         cabal: ["3.0"]
+        cache-version: ["2020-04-04-1"]
 
     steps:
     - uses: actions/checkout@v2
@@ -26,36 +27,29 @@ jobs:
       with:
         ghc-version: ${{ matrix.ghc }}
         cabal-version: ${{ matrix.cabal }}
-
-    - name: Display ghc & cabal version
-      run: |
-        ghc -V
-        cabal -V
-
+  
     - name: Cache ~/.cabal/store
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v1
       with:
         path: ~/.cabal/store
-        key: v1-cabal-store
+        key: ${{ runner.os }}-${{ matrix.ghc }}-${{ matrix.cache-version }}-cabal-store
 
     - name: Cache dist-newstyle
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v1
       with:
         path: dist-newstyle
-        key: v1-cabal-dist
+        key: ${{ runner.os }}-${{ matrix.ghc }}-${{ matrix.cache-version }}-cabal-dist
 
     - name: Set PATH
-      run: |
-        echo "::add-path::$HOME/.cabal/bin"
+      run: echo "::add-path::$HOME/.cabal/bin"
 
     - name: Install dependencies
       run: |
-        cabal v2-update
-        cabal v2-configure --disable-optimization --write-ghc-environment-files=always -j2
-        cabal v2-build --only-dependencies
+        cabal update
+        cabal configure --disable-optimization --write-ghc-environment-files=always -j2 --enable-tests
+        cabal build --only-dependencies
 
     - name: Build & Test
       run: |
-        cabal v2-build
-        cabal v2-install . --overwrite-policy=always
-        cabal v2-test
+        cabal install . --overwrite-policy=always
+        cabal test all
