@@ -19,7 +19,7 @@ jobs:
       matrix:
         ghc: ["8.8.3", "8.6.5", "8.4.4"]
         cabal: ["3.0"]
-        cache-version: ["2020-04-04"]
+        cache-version: ["2020-04-04-1"]
 
     steps:
     - uses: actions/checkout@v2
@@ -46,11 +46,11 @@ jobs:
     - name: Install dependencies
       run: |
         cabal update
-        cabal configure --disable-optimization --write-ghc-environment-files=always -j2
-        cabal build --only-dependencies
+        cabal configure --disable-optimization --write-ghc-environment-files=always -j2 --enable-tests
+        cabal test --only-dependencies
 
     - name: Build & Test
       run: |
         cabal build
         cabal install . --overwrite-policy=always
-        cabal test all --enable-tests
+        cabal test all
