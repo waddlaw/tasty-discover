@@ -67,19 +67,19 @@ executable tasty-discover
   ghc-options:   -O2
 
 test-suite test
-  import:             common
-  type:               exitcode-stdio-1.0
-  main-is:            Driver.hs
-  hs-source-dirs:     test
+  import:         common
+  type:           exitcode-stdio-1.0
+  main-is:        Driver.hs
+  hs-source-dirs: test
   build-depends:
-    , hedgehog
-    , tasty
-    , tasty-discover
-    , tasty-hedgehog
-    , tasty-hspec
-    , tasty-hunit
-    , tasty-quickcheck
-    , tasty-smallcheck
+    , hedgehog          ^>=1.0
+    , tasty             ^>=1.2
+    , tasty-discover    ^>=4.2
+    , tasty-hedgehog    ^>=1.0
+    , tasty-hspec       ^>=1.1
+    , tasty-hunit       ^>=0.10
+    , tasty-quickcheck  ^>=0.10
+    , tasty-smallcheck  ^>=0.8
 
   -- cabal-fmt: expand test -Driver
   other-modules:
