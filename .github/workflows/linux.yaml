@@ -51,5 +51,6 @@ jobs:
 
     - name: Build & Test
       run: |
-        cabal test all --enable-tests
+        cabal build
         cabal install . --overwrite-policy=always
+        cabal test all --enable-tests
