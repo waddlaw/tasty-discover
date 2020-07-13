@@ -41,7 +41,7 @@ test_generateTree = do
   pure $ testCase input $ pure ()
 
 test_generateTrees :: IO [TestTree]
-test_generateTrees = map (\s -> testCase s $ pure ()) <$> pure ["First input", "Second input"]
+test_generateTrees = pure $ map (\ s -> testCase s $ pure ()) ["First input", "Second input"]
 
 {-# ANN hprop_reverse "HLint: ignore Avoid reverse" #-}
 hprop_reverse :: H.Property

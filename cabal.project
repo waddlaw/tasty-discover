@@ -1,5 +1,0 @@
-packages: .
-allow-newer:
-  tasty-hspec:base
-  tasty-hedgehog:base
-  hedgehog:template-haskell

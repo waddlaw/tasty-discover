@@ -1,8 +1,0 @@
-cradle:
-  cabal:
-    - path: "./test"
-      component: "tasty-discover:test"
-    - path: "./app/Main.hs"
-      component: "exe:tasty-discover"
-    - path: "./src"
-      component: "lib:tasty-discover"
